@@ -3,21 +3,25 @@ package kresti_nuli;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 
-public class KrestiNuli implements ActionListener{
+import jssc.SerialPort;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
 
+public class KrestiNuli implements ActionListener{
+	static SerialPort serialPort = null;
 	Random random = new Random();
 	JFrame frame = new JFrame();
 	JPanel title_panel = new JPanel();
 	JPanel button_panel = new JPanel();
+	JPanel com_panel = new JPanel();
 	JLabel textfield = new JLabel();
 	JButton[] buttons = new JButton[9];
 	JButton restartBtn = new JButton("Перезапустить игру");
 	boolean player1_turn;
-
+	int k=0;
 	KrestiNuli(){
 		
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -35,14 +39,80 @@ public class KrestiNuli implements ActionListener{
 		
 		title_panel.setLayout(new BorderLayout());
 		title_panel.setBounds(0,0,800,100);
-		frame.add(restartBtn,BorderLayout.SOUTH);
+		com_panel.add(restartBtn);
 		
 		button_panel.setLayout(new GridLayout(3,3));
 		button_panel.setBackground(new Color(150,150,150));
-		
+		String[] portNames = SerialPortList.getPortNames(); // получаем список портов
+		JComboBox<String> comPorts = new JComboBox<>(portNames); // создаем комбобокс с этим списком
+		comPorts.setSelectedIndex(-1); // чтоб не было выбрано ничего в комбобоксе
+		comPorts.addActionListener(arg -> { // слушатель выбора порта в комбобоксе
+			String choosenPort = comPorts.getItemAt(comPorts.getSelectedIndex()); // получаем название выбранного порта
+			//если serialPort еще не связана с портом или текущий порт не равен выбранному в комбо-боксе 
+			if (serialPort == null || !serialPort.getPortName().contains(choosenPort)) {
+				serialPort = new SerialPort(choosenPort); //задаем выбранный порт
+				try { //тут секция с try...catch для работы с портом 
+					serialPort.openPort(); //открываем порт
+					serialPort.setParams(9600, 8, 1, 0); //задаем параметры порта, 9600 - скорость, такую же нужно задать для Serial.begin в Arduino
+					//остальные параметры стандартные для работы с портом
+					serialPort.addEventListener(event -> {  //слушатель порта для приема сообщений от ардуино
+						if (event.isRXCHAR()) {// если есть данные для приема
+							try {  //тут секция с try...catch для работы с портом
+								String str = serialPort.readString(); //считываем данные из порта в строку
+								str = str.trim(); //убираем лишние символы (типа пробелов, которые могут быть в принятой строке) 
+								System.out.println(str); //выводим принятую строку
+								if (str.contains("1")) { 
+									if (k>2)
+									{
+										buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
+										k-=3;
+										buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+									}
+								}
+								if (str.contains("2")) {
+									if (k<6)
+									{
+										buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
+										k+=3;
+										buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+									}
+								}
+								if (str.contains("3")) { //обработка кнопки сброса
+									if (k==2 || k==5 || k==8)
+									{
+										buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
+										k-=1;
+										buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+									}
+								}
+								if (str.contains("4"))
+								{
+									if (k==0 || k==3 || k==6)
+									{
+										buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
+										k+=1;
+										buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+									}
+								}
+								if (str.contains("5"))
+								{
+									buttons[k].doClick();
+								}
+							} catch (SerialPortException ex) { //для обработки возможных ошибок
+								System.out.println(ex);
+							}
+						}
+					});
+					
+				} catch (SerialPortException e) {//для обработки возможных ошибок
+					e.printStackTrace();
+				}
+			} else
+				System.out.println("Same port!!"); //это если выбрали в списке тот же порт, что и до этого
+		});
 		for(int i=0;i<9;i++) {
 			buttons[i] = new JButton();
-			buttons[i].setBorder(BorderFactory.createLineBorder(Color.WHITE, 5));
+			buttons[i].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
 			button_panel.add(buttons[i]);
 			buttons[i].setFont(new Font("MV Boli",Font.BOLD,120));
 			buttons[i].setFocusable(false);
@@ -66,7 +136,8 @@ public class KrestiNuli implements ActionListener{
 		title_panel.add(textfield);
 		frame.add(title_panel,BorderLayout.NORTH);
 		frame.add(button_panel);
-		
+		com_panel.add(comPorts);
+		frame.add(com_panel,BorderLayout.SOUTH);
 		firstTurn();
 	}
 
