@@ -19,9 +19,9 @@ public class KrestiNuli implements ActionListener{
 	JPanel com_panel = new JPanel();
 	JLabel textfield = new JLabel();
 	JButton[] buttons = new JButton[9];
-	JButton restartBtn = new JButton("Перезапустить игру");
+	JButton restartBtn = new JButton("РџРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЊ РёРіСЂСѓ");
 	boolean player1_turn;
-	int k=0;
+	int k=4;
 	KrestiNuli(){
 		
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -34,7 +34,7 @@ public class KrestiNuli implements ActionListener{
 		textfield.setForeground(new Color(25,255,0));
 		textfield.setFont(new Font("Times New Roman",Font.BOLD,75));
 		textfield.setHorizontalAlignment(JLabel.CENTER);
-		textfield.setText("Крестики-нолики");
+		textfield.setText("РљСЂРµСЃС‚РёРєРё-РЅРѕР»РёРєРё");
 		textfield.setOpaque(true);
 		
 		title_panel.setLayout(new BorderLayout());
@@ -43,72 +43,102 @@ public class KrestiNuli implements ActionListener{
 		
 		button_panel.setLayout(new GridLayout(3,3));
 		button_panel.setBackground(new Color(150,150,150));
-		String[] portNames = SerialPortList.getPortNames(); // получаем список портов
-		JComboBox<String> comPorts = new JComboBox<>(portNames); // создаем комбобокс с этим списком
-		comPorts.setSelectedIndex(-1); // чтоб не было выбрано ничего в комбобоксе
-		comPorts.addActionListener(arg -> { // слушатель выбора порта в комбобоксе
-			String choosenPort = comPorts.getItemAt(comPorts.getSelectedIndex()); // получаем название выбранного порта
-			//если serialPort еще не связана с портом или текущий порт не равен выбранному в комбо-боксе 
+		String[] portNames = SerialPortList.getPortNames(); // РїРѕР»СѓС‡Р°РµРј СЃРїРёСЃРѕРє РїРѕСЂС‚РѕРІ
+		JComboBox<String> comPorts = new JComboBox<>(portNames); // СЃРѕР·РґР°РµРј РєРѕРјР±РѕР±РѕРєСЃ СЃ СЌС‚РёРј СЃРїРёСЃРєРѕРј
+		comPorts.setSelectedIndex(-1); // С‡С‚РѕР± РЅРµ Р±С‹Р»Рѕ РІС‹Р±СЂР°РЅРѕ РЅРёС‡РµРіРѕ РІ РєРѕРјР±РѕР±РѕРєСЃРµ
+		comPorts.addActionListener(arg -> { // СЃР»СѓС€Р°С‚РµР»СЊ РІС‹Р±РѕСЂР° РїРѕСЂС‚Р° РІ РєРѕРјР±РѕР±РѕРєСЃРµ
+			String choosenPort = comPorts.getItemAt(comPorts.getSelectedIndex()); // РїРѕР»СѓС‡Р°РµРј РЅР°Р·РІР°РЅРёРµ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РїРѕСЂС‚Р°
+			//РµСЃР»Рё serialPort РµС‰Рµ РЅРµ СЃРІСЏР·Р°РЅР° СЃ РїРѕСЂС‚РѕРј РёР»Рё С‚РµРєСѓС‰РёР№ РїРѕСЂС‚ РЅРµ СЂР°РІРµРЅ РІС‹Р±СЂР°РЅРЅРѕРјСѓ РІ РєРѕРјР±Рѕ-Р±РѕРєСЃРµ 
 			if (serialPort == null || !serialPort.getPortName().contains(choosenPort)) {
-				serialPort = new SerialPort(choosenPort); //задаем выбранный порт
-				try { //тут секция с try...catch для работы с портом 
-					serialPort.openPort(); //открываем порт
-					serialPort.setParams(9600, 8, 1, 0); //задаем параметры порта, 9600 - скорость, такую же нужно задать для Serial.begin в Arduino
-					//остальные параметры стандартные для работы с портом
-					serialPort.addEventListener(event -> {  //слушатель порта для приема сообщений от ардуино
-						if (event.isRXCHAR()) {// если есть данные для приема
-							try {  //тут секция с try...catch для работы с портом
-								String str = serialPort.readString(); //считываем данные из порта в строку
-								str = str.trim(); //убираем лишние символы (типа пробелов, которые могут быть в принятой строке) 
-								System.out.println(str); //выводим принятую строку
-								if (str.contains("1")) { 
-									if (k>2)
-									{
-										buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
-										k-=3;
-										buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+				serialPort = new SerialPort(choosenPort); //Р·Р°РґР°РµРј РІС‹Р±СЂР°РЅРЅС‹Р№ РїРѕСЂС‚
+				try { //С‚СѓС‚ СЃРµРєС†РёСЏ СЃ try...catch РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїРѕСЂС‚РѕРј 
+					serialPort.openPort(); //РѕС‚РєСЂС‹РІР°РµРј РїРѕСЂС‚
+					serialPort.setParams(9600, 8, 1, 0); //Р·Р°РґР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РїРѕСЂС‚Р°, 9600 - СЃРєРѕСЂРѕСЃС‚СЊ, С‚Р°РєСѓСЋ Р¶Рµ РЅСѓР¶РЅРѕ Р·Р°РґР°С‚СЊ РґР»СЏ Serial.begin РІ Arduino
+					//РѕСЃС‚Р°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїРѕСЂС‚РѕРј
+					serialPort.addEventListener(event -> {  //СЃР»СѓС€Р°С‚РµР»СЊ РїРѕСЂС‚Р° РґР»СЏ РїСЂРёРµРјР° СЃРѕРѕР±С‰РµРЅРёР№ РѕС‚ Р°СЂРґСѓРёРЅРѕ
+						if (event.isRXCHAR()) {// РµСЃР»Рё РµСЃС‚СЊ РґР°РЅРЅС‹Рµ РґР»СЏ РїСЂРёРµРјР°
+							try {  //С‚СѓС‚ СЃРµРєС†РёСЏ СЃ try...catch РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїРѕСЂС‚РѕРј
+								String str = serialPort.readString(); //СЃС‡РёС‚С‹РІР°РµРј РґР°РЅРЅС‹Рµ РёР· РїРѕСЂС‚Р° РІ СЃС‚СЂРѕРєСѓ
+								str = str.trim(); //СѓР±РёСЂР°РµРј Р»РёС€РЅРёРµ СЃРёРјРІРѕР»С‹ (С‚РёРїР° РїСЂРѕР±РµР»РѕРІ, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РІ РїСЂРёРЅСЏС‚РѕР№ СЃС‚СЂРѕРєРµ) 
+								System.out.println(str); //РІС‹РІРѕРґРёРј РїСЂРёРЅСЏС‚СѓСЋ СЃС‚СЂРѕРєСѓ
+								buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+								if (player1_turn==true) {
+									if (str.contains("100")) {
+										if (k > 2) {
+											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
+											k -= 3;
+											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+										}
+									}
+									if (str.contains("200")) {
+										if (k < 6) {
+											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
+											k += 3;
+											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+										}
+									}
+									if (str.contains("300")) { //РѕР±СЂР°Р±РѕС‚РєР° РєРЅРѕРїРєРё СЃР±СЂРѕСЃР°
+										if (k != 0 && k != 3 && k != 6) {
+											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
+											k -= 1;
+											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+										}
+									}
+									if (str.contains("400")) {
+										if (k != 2 && k != 5 && k != 8) {
+											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
+											k += 1;
+											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+										}
+									}
+									if (str.contains("50")) {
+										buttons[k].doClick();
 									}
 								}
-								if (str.contains("2")) {
-									if (k<6)
-									{
-										buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
-										k+=3;
-										buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+								if (player1_turn==false) {
+									if (str.contains("01")) {
+										if (k > 2) {
+											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
+											k -= 3;
+											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+										}
+									}
+									if (str.contains("02")) {
+										if (k < 6) {
+											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
+											k += 3;
+											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+										}
+									}
+									if (str.contains("03")) { //РѕР±СЂР°Р±РѕС‚РєР° РєРЅРѕРїРєРё СЃР±СЂРѕСЃР°
+										if (k != 0 && k != 3 && k != 6) {
+											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
+											k -= 1;
+											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+										}
+									}
+									if (str.contains("04")) {
+										if (k != 2 && k != 5 && k != 8) {
+											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
+											k += 1;
+											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
+										}
+									}
+									if (str.contains("05")) {
+										buttons[k].doClick();
 									}
 								}
-								if (str.contains("3")) { //обработка кнопки сброса
-									if (k==2 || k==5 || k==8)
-									{
-										buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
-										k-=1;
-										buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
-									}
-								}
-								if (str.contains("4"))
-								{
-									if (k==0 || k==3 || k==6)
-									{
-										buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32,77,128), 5));
-										k+=1;
-										buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
-									}
-								}
-								if (str.contains("5"))
-								{
-									buttons[k].doClick();
-								}
-							} catch (SerialPortException ex) { //для обработки возможных ошибок
+							} catch (SerialPortException ex) { //РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё РІРѕР·РјРѕР¶РЅС‹С… РѕС€РёР±РѕРє
 								System.out.println(ex);
 							}
 						}
 					});
 					
-				} catch (SerialPortException e) {//для обработки возможных ошибок
+				} catch (SerialPortException e) {//РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё РІРѕР·РјРѕР¶РЅС‹С… РѕС€РёР±РѕРє
 					e.printStackTrace();
 				}
 			} else
-				System.out.println("Same port!!"); //это если выбрали в списке тот же порт, что и до этого
+				System.out.println("Same port!!"); //СЌС‚Рѕ РµСЃР»Рё РІС‹Р±СЂР°Р»Рё РІ СЃРїРёСЃРєРµ С‚РѕС‚ Р¶Рµ РїРѕСЂС‚, С‡С‚Рѕ Рё РґРѕ СЌС‚РѕРіРѕ
 		});
 		for(int i=0;i<9;i++) {
 			buttons[i] = new JButton();
@@ -128,7 +158,7 @@ public class KrestiNuli implements ActionListener{
 					buttons[i].setEnabled(true);
 					buttons[i].setBackground(new JButton().getBackground());
 				}
-				textfield.setText("Крестики-нолики");
+				textfield.setText("РљСЂРµСЃС‚РёРєРё-РЅРѕР»РёРєРё");
 				firstTurn();
 				
 			}
@@ -151,7 +181,7 @@ public class KrestiNuli implements ActionListener{
 						buttons[i].setForeground(new Color(255,0,0));
 						buttons[i].setText("X");
 						player1_turn=false;
-						textfield.setText("O ходят");
+						textfield.setText("O С…РѕРґСЏС‚");
 						check();
 					}
 				}
@@ -160,7 +190,7 @@ public class KrestiNuli implements ActionListener{
 						buttons[i].setForeground(new Color(0,0,255));
 						buttons[i].setText("O");
 						player1_turn=true;
-						textfield.setText("X ходят");
+						textfield.setText("X С…РѕРґСЏС‚");
 						check();
 					}
 				}
@@ -173,11 +203,11 @@ public class KrestiNuli implements ActionListener{
 		
 		if(random.nextInt(2)==0) {
 			player1_turn=true;
-			textfield.setText("X ходят");
+			textfield.setText("X С…РѕРґСЏС‚");
 		}
 		else {
 			player1_turn=false;
-			textfield.setText("O ходят");
+			textfield.setText("O С…РѕРґСЏС‚");
 		}
 	}
 	
@@ -305,11 +335,11 @@ public class KrestiNuli implements ActionListener{
 		(buttons[6].getText()!="") &&
 		(buttons[7].getText()!="") &&
 		(buttons[8].getText()!="") && 
-		(textfield.getText()!="Победа крестиков")&& 
-		(textfield.getText()!="Победа ноликов")
+		(textfield.getText()!="РџРѕР±РµРґР° РєСЂРµСЃС‚РёРєРѕРІ")&& 
+		(textfield.getText()!="РџРѕР±РµРґР° РЅРѕР»РёРєРѕРІ")
 				)
 		{
-			textfield.setText("Победила дружба!");
+			textfield.setText("РџРѕР±РµРґРёР»Р° РґСЂСѓР¶Р±Р°!");
 			for(int i=0;i<9;i++) {
 				buttons[i].setEnabled(false);
 				buttons[i].setBackground(Color.GREEN);
@@ -325,7 +355,7 @@ public class KrestiNuli implements ActionListener{
 		for(int i=0;i<9;i++) {
 			buttons[i].setEnabled(false);
 		}
-		textfield.setText("Победа крестиков");
+		textfield.setText("РџРѕР±РµРґР° РєСЂРµСЃС‚РёРєРѕРІ");
 	}
 	public void oWins(int a,int b,int c) {
 		buttons[a].setBackground(Color.GREEN);
@@ -335,6 +365,6 @@ public class KrestiNuli implements ActionListener{
 		for(int i=0;i<9;i++) {
 			buttons[i].setEnabled(false);
 		}
-		textfield.setText("Победа ноликов");
+		textfield.setText("РџРѕР±РµРґР° РЅРѕР»РёРєРѕРІ");
 	}
 }
