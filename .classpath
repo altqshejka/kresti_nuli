@@ -6,6 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Андрей/eclipse-workspace/kresti_nuli/jssc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Андрей/eclipse-workspace/kresti_nuli/jssc-2.9.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

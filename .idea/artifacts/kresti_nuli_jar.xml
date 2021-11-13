@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="kresti_nuli:jar">
+    <output-path>$PROJECT_DIR$/classes/artifacts/kresti_nuli_jar</output-path>
+    <root id="archive" name="kresti_nuli.jar">
+      <element id="module-output" name="kresti_nuli" />
+      <element id="library" level="module" name="jssc.jar" module-name="kresti_nuli" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/jssc-2.9.2.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
