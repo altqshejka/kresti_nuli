@@ -63,28 +63,28 @@ public class KrestiNuli implements ActionListener{
 								System.out.println(str); //выводим принятую строку
 								buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
 								if (player1_turn==true) {
-									if (str.contains("100")) {
+									if (str.contains("10")) {
 										if (k > 2) {
 											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
 											k -= 3;
 											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
 										}
 									}
-									if (str.contains("200")) {
+									if (str.contains("20")) {
 										if (k < 6) {
 											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
 											k += 3;
 											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
 										}
 									}
-									if (str.contains("300")) { //обработка кнопки сброса
+									if (str.contains("30")) { //обработка кнопки сброса
 										if (k != 0 && k != 3 && k != 6) {
 											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
 											k -= 1;
 											buttons[k].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 5));
 										}
 									}
-									if (str.contains("400")) {
+									if (str.contains("40")) {
 										if (k != 2 && k != 5 && k != 8) {
 											buttons[k].setBorder(BorderFactory.createLineBorder(new Color(32, 77, 128), 5));
 											k += 1;
